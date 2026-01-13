@@ -88,11 +88,15 @@ QSqlDatabase ConnectionPool::acquire(int timeoutMs)
 		if (m_connectionMap.size() < m_maxConnectionCount) {
 			QString connName = createConnectionName();
 			QSqlDatabase db = QSqlDatabase::addDatabase(m_driver, connName);
+		
 			db.setHostName(m_host);
 			db.setDatabaseName(m_dbName);
 			db.setUserName(m_user);
 			db.setPassword(m_password);
 			db.setPort(m_port);
+			db.setConnectOptions("MYSQL_OPT_CONNECT_TIMEOUT=5;"
+				"MYSQL_OPT_READ_TIMEOUT=5;"
+				"MYSQL_OPT_WRITE_TIMEOUT=5");
 			if (!db.open()) {
 				qDebug() << "Failed to open DB:" << db.lastError().text();
 			}			
